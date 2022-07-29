@@ -7,4 +7,9 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'CryptoTracker';
+  selectedCurrency: string = "thb";
+
+  sendCurrency(event: string) {
+    console.log(event);
+  }
 }
