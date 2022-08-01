@@ -5,6 +5,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 
 import { ApiService } from '../service/api.service';
+import { CurrencyService } from '../service/currency.service';
 
 @Component({
   selector: 'app-coinlist',
@@ -13,6 +14,7 @@ import { ApiService } from '../service/api.service';
 })
 export class CoinlistComponent implements OnInit {
   bannerData: any = [];
+  currency: string = 'thb';
   dataSource!: MatTableDataSource<any>;
   displayedColumns: string[] = [
     'symbol',
@@ -23,20 +25,29 @@ export class CoinlistComponent implements OnInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  constructor(private api: ApiService, private router: Router) {}
+  constructor(
+    private api: ApiService,
+    private router: Router,
+    private currencyService: CurrencyService
+  ) {}
 
   ngOnInit(): void {
     this.getAllData();
     this.getBannerData();
+    this.currencyService.getCurrency().subscribe((value) => {
+      this.currency = value;
+      this.getBannerData();
+      this.getAllData();
+    });
   }
   getBannerData() {
-    this.api.getTrendingCurrency('THB').subscribe((res) => {
+    this.api.getTrendingCurrency(this.currency).subscribe((res) => {
       console.log(res);
       this.bannerData = res;
     });
   }
   getAllData() {
-    this.api.getCurrency('THB').subscribe((res) => {
+    this.api.getCurrency(this.currency).subscribe((res) => {
       console.log(res);
       // Assign the data to the data source for the table to render
       this.dataSource = new MatTableDataSource(res);
